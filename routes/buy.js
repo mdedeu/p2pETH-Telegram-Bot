@@ -28,7 +28,21 @@ router.post('/buy/eth', async (req, res) => {
     
     try{
         const savedBuyOrder = await post.save();
-        const sellOrders = await Sell.find();
+        
+        const sellOrders = await Sell.find({gateway:  req.body.gateway}, function(err, user) 
+        {
+           if (err)
+           {
+               res.send(err);
+           }
+           console.log(user);
+           res.json(user);
+       
+        });
+
+        if(!sellOrders){
+            req.status(404).send({error: "No Seller Found. Try Again"})
+        }
         req.status(200).send(sellOrders);
     }catch{
         res.status(500).json({ message: error})

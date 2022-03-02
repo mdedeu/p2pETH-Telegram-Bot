@@ -1,13 +1,17 @@
 const express = require('express');
 const Joi = require('joi')
 
-const Post = require('../models/Post');
+const Buy = require('../models/Buy');
+const Sell = require('../models/Sell');
 
 const router = express.Router()
 
 
 router.post('/buy/eth', async (req, res) => {
+
     const schema = Joi.object({
+        user: Joi.string(),
+        gateway: Joi.string()
     })
 
     const result = schema.validate(req.body);
@@ -24,7 +28,8 @@ router.post('/buy/eth', async (req, res) => {
     
     try{
         const savedBuyOrder = await post.save();
-        res.status(200).json({message: "yEY. Wait for a seller to appear"})
+        const sellOrders = await Sell.find();
+        req.status(200).send(sellOrders);
     }catch{
         res.status(500).json({ message: error})
     }
